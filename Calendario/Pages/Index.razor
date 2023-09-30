@@ -1,9 +1,124 @@
 ﻿@page "/"
 
+@using Calendario.Models
+@inject IJSRuntime JSRuntime
+
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+    <symbol id="arrow-left-short" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"></path>
+    </symbol>
 
-Welcome to your new app.
+    <symbol id="arrow-right-short" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"></path>
+    </symbol>
+</svg>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<h3>Agenda Calendario</h3>
+
+<div class="d-grid gap-1">
+    <div class="cal-month">
+        <button class="btn cal-btn" type="button" @onclick="PrevMonth">
+            <svg class="bi" width="16" height="16"><use xlink:href="#arrow-left-short"></use></svg>
+        </button>
+        <strong class="cal-month-name">@currentMonth.ToString("MMMM yyyy")</strong>
+        <button class="btn cal-btn" type="button" @onclick="NextMonth">
+            <svg class="bi" width="16" height="16"><use xlink:href="#arrow-right-short"></use></svg>
+        </button>
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+                <th class="table-warning">Sábado</th>
+                <th class="table-warning">Domingo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int week = 0; week < 6; week++)
+            {
+                <tr>
+                    @for (int dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++)
+                    {
+                        var date = new DateTime(currentMonth.Year, currentMonth.Month, 1).AddDays(week * 7 + dayOfWeek - 
+                        (int)new DateTime(currentMonth.Year, currentMonth.Month, 1).DayOfWeek + 1);
+                        var isToday = date.Date == DateTime.Today;
+                        var isWeekend = date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday;
+
+                        if (date.Month == currentMonth.Month)
+                        {
+                            <td class="@(isToday ? "table-primary" : "") @(isWeekend ? "table-warning" : "")">
+                                @date.Day
+                                
+                            </td>
+                        }
+                        else
+                        {
+                            <td class="table-secondary disabled">
+                                @date.Day
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Task</th>
+            <th>Comienza</th>
+            <th>Termina</th>
+            <th>Ultima modificación</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (ToDo toDos in ToDoList)
+        {
+            <tr>
+                <th>@toDos.Content</th>
+                <th>@toDos.InitialDate</th>
+                <th>@toDos.CloseDate</th>
+                <th>@toDos.LastModifiedDate</th>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@code {
+    private List<ToDo> ToDoList { get; set; }
+    private DateTime currentMonth = DateTime.Now;
+
+    protected override void OnInitialized()
+    {
+        ToDoList = new List<ToDo>()
+        {
+            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 1", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 2", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 3", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 4", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
+            // Agrega más tareas aquí
+        };
+    }
+
+    private void PrevMonth()
+    {
+        currentMonth = currentMonth.AddMonths(-1);
+    }
+
+    private void NextMonth()
+    {
+        currentMonth = currentMonth.AddMonths(1);
+    }
+}
