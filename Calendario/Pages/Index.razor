@@ -102,14 +102,24 @@
 
     protected override void OnInitialized()
     {
-        ToDoList = new List<ToDo>()
+        ToDoList = new List<ToDo>
         {
-            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 1", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
-            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 2", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
-            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 3", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
-            new ToDo { InitialDate = DateTime.Now, Content = "Tarea 4", CloseDate = DateTime.Now, LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = new DateTime(2023, 10, 4), Content = "Tarea 1", CloseDate = new DateTime(2023, 10, 5), LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = new DateTime(2023, 10, 5), Content = "Tarea 2", CloseDate = new DateTime(2023, 10, 15), LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = new DateTime(2023, 10, 6), Content = "Tarea 3", CloseDate = new DateTime(2023, 10, 25), LastModifiedDate = DateTime.Now },
+            new ToDo { InitialDate = new DateTime(2023, 10, 7), Content = "Tarea 4", CloseDate = new DateTime(2023, 10, 30), LastModifiedDate = DateTime.Now },
             // Agrega más tareas aquí
-        };
+        };      
+    }
+    private bool EsHoy(ToDo toDo)
+    {
+        var hoy = DateTime.Today;
+        return toDo.InitialDate <= hoy && toDo.CloseDate >= hoy;
+    }
+
+    private string GetColor(ToDo toDo)
+    {
+        return EsHoy(toDo) ? "yellow" : "white";
     }
 
     private void PrevMonth()
